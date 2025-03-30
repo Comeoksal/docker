@@ -5,7 +5,7 @@
 int main() {
 	char *cwd;
 	char wd1[BUFSIZ];
-	char wd2[10];
+	char wd2[18];
 
 	getcwd(wd1, BUFSIZ);
 	printf("wd1 = %s\n", wd1);
@@ -15,10 +15,10 @@ int main() {
 	free(cwd);
 
 	cwd = getcwd(NULL, 0);
-        printf("cwd1 = %s\n", cwd);
+        printf("cwd2 = %s\n", cwd);
         free(cwd);
 
-	if(getcwd(wd2, 10) ==NULL) {
+	if(getcwd(wd2, 18) ==NULL) {
 		perror("getcwd");
 		exit(1);
 	}
