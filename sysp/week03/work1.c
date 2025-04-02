@@ -11,25 +11,25 @@
 
 void LS1(DIR *dp, struct dirent *dent){
 	dp = opendir(".");
-                while((dent = readdir(dp))) {
-                        if(strcmp(dent->d_name, ".")==0 || strcmp(dent->d_name, "..")==0) {
-                                continue;
-                        }
-                        printf("%s  ", dent->d_name);
-                }
-                printf("\n");
-                closedir(dp);;
+        while((dent = readdir(dp))) {
+       		 if(strcmp(dent->d_name, ".")==0 || strcmp(dent->d_name, "..")==0) {
+                	 continue;
+                 }
+                 printf("%s  ", dent->d_name);
+        }
+        printf("\n");
+        closedir(dp);;
 }
-void LS2(DIR *dp, struct dirent *dent, char*argv1){
-	dp = opendir(argv1);
-                while((dent = readdir(dp))) {
-                        if(strcmp(dent->d_name, ".")==0 || strcmp(dent->d_name, "..")==0) {
-                                continue;
-                        }
-                        printf("%s  ", dent->d_name);
+void LS2(DIR *dp, struct dirent *dent, char*arg){
+	dp = opendir(arg);
+        while((dent = readdir(dp))) {
+       		if(strcmp(dent->d_name, ".")==0 || strcmp(dent->d_name, "..")==0) {
+                	continue;
                 }
-                printf("\n");
-		closedir(dp);
+               	printf("%s  ", dent->d_name);
+       	}
+       	printf("\n");
+	closedir(dp);
 }
 void LS3(DIR *dp, struct dirent *dent){
 	struct stat statbuf;
@@ -49,15 +49,8 @@ void LS3(DIR *dp, struct dirent *dent){
                         continue;
                 }
                 stat(dent->d_name, &statbuf);
-
-		mode_t mode =  statbuf.st_mode;
-
-		struct passwd *pass;
-		pass = getpwuid(statbuf.st_uid);
-		struct group *group;
-		group = getgrgid(statbuf.st_gid);
 		
-		struct tm *time = localtime(&statbuf.st_mtime);
+		unsigned int mode = (unsigned int)statbuf.st_mode;
 		char temp[11] = "----------";
 		if (S_ISREG(mode)) temp[0] = '-';
 		else if (S_ISDIR(mode)) temp[0] = 'd';
@@ -78,49 +71,57 @@ void LS3(DIR *dp, struct dirent *dent){
 		if (mode & S_IROTH) temp[7] = 'r';
 		if (mode & S_IWOTH) temp[8] = 'w';
 		if (mode & S_IXOTH) temp[9] = 'x';
-
-		char *months[] = {
-		 "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-       		 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-   		};
-		
-		temp[10] = '\0';
 		printf("%s ", temp);
+
                 printf("%d ", (unsigned int)statbuf.st_nlink);
+
+                struct passwd *pass;
+                pass = getpwuid(statbuf.st_uid);
+                struct group *group;
+                group = getgrgid(statbuf.st_gid);
 		printf("%s %s ", pass->pw_name, group->gr_name);
+
 		printf("%5d ", (int)statbuf.st_size);
+
+		struct tm *time = localtime(&statbuf.st_mtime);
+		char *months[] = {
+                 "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+                };
 		printf("%s %2d %02d:%02d ", months[time->tm_mon], time->tm_mday, time->tm_hour, time->tm_min);
+
                 printf("%s\n", dent->d_name);
         }
         closedir(dp);;
 }
-void LS4(DIR *dp, struct dirent *dent, char* argv) {
+void LS4(DIR *dp, struct dirent *dent, char* arg) {
 	struct stat statbuf;
 	char *dirs[1000];
 	int dirCount = 0;
-	dp = opendir(argv);
-	printf(".");
-	if(strcmp(argv, ".")!=0) {
-		printf("/%s", argv);
-	}
-	printf(":\n");
-                while((dent = readdir(dp))) {
-                        if(strcmp(dent->d_name, ".")==0 || strcmp(dent->d_name, "..")==0) {
-                                continue;
-                        }
-			stat(dent->d_name, &statbuf);
-               		mode_t mode =  statbuf.st_mode;
-			if(S_ISDIR(mode)) {
-				dirs[dirCount] = dent->d_name;
-				dirCount++;
-			}
-                        printf("%s  ", dent->d_name);
+
+	dp = opendir(arg);
+
+	printf("%s:\n", arg);
+        while((dent = readdir(dp))) {
+                if(strcmp(dent->d_name, ".")==0 || strcmp(dent->d_name, "..")==0) {
+                	continue;
                 }
-		for(int k=0; k<dirCount; k++) {
-			printf("\n\n");
-			LS4(dp, dent, dirs[k]);
+		char temp[1024];
+                snprintf(temp, sizeof(temp), "%s/%s", arg, dent->d_name);
+		stat(temp, &statbuf);
+               	unsigned int mode = (unsigned int)statbuf.st_mode;
+		if(S_ISDIR(mode)) {
+			dirs[dirCount] = strdup(temp);
+			dirCount++;
 		}
-                closedir(dp);;
+                printf("%s  ", dent->d_name);
+        }
+	closedir(dp);
+	for(int k=0; k<dirCount; k++) {
+		printf("\n\n");
+		LS4(dp, dent, dirs[k]);
+		free(dirs[k]);
+	}
 }
 int main(int argc, char *argv[]) {
 	DIR *dp;
@@ -131,8 +132,9 @@ int main(int argc, char *argv[]) {
 	} else {
 		if(strcmp(argv[1], "-l")==0) {
 			LS3(dp, dent);
-		} else if (strcmp(argv[1], "-R")==0) {
+		} else if (strcmp(argv[1], "-r")==0) {
 			LS4(dp, dent, ".");
+			printf("\n");
 		} else {
 			LS2(dp, dent, argv[1]);
 		}
