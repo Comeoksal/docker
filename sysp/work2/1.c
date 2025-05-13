@@ -3,32 +3,39 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <string.h>
 
 int main(){
-	int a, b, status;
-	char c;
+	int status, result=0;
+	char c, buf[BUFSIZ], *token;
 	pid_t pid;
 	
        	while(1){
-		printf("Input two numbers : ");
-                scanf("%d %d", &a, &b);
-		switch(pid=fork()){
-			case -1:
-				perror("fork");
-				exit(1);
-			case 0:
-				printf("result = %d\n", a+b);
-				exit(1);
-			default:
-				while(wait(&status) !=pid)
-					continue;
-				printf("try again (Y/N) : ");
-				scanf(" %c", &c);
-				if(c=='Y'){
-					continue;
-				} else {
-					exit(1);
-				}
+		printf("Input numbers : ");
+                fgets(buf, sizeof(buf), stdin);
+		pid = fork();
+		if(pid > 0){
+			while(wait(&status) !=pid)
+                                continue;
+                        printf("try again (Y/N) : ");
+                        scanf("%c", &c);
+                        if(c=='Y'){
+                        	getchar();
+                                continue;
+                        } else {
+                                exit(0);
+                        }
+		} else if(pid==0) {
+			token = strtok(buf, " \n");
+                        while(token!=NULL){
+                        	result+=atoi(token);
+                             	token = strtok(NULL, " ");
+                        }
+                        printf("result = %d\n", result);
+                        exit(0);
+		} else {
+			perror("fork fail");
+			exit(1);
 		}
 	}
 	return 0;
