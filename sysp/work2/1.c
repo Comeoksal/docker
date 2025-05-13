@@ -6,32 +6,48 @@
 #include <string.h>
 
 int main(){
-	int status, result=0;
+	int n, status, countToken=0, result=0;
 	char c, buf[BUFSIZ], *token;
 	pid_t pid;
 	
        	while(1){
+		printf("How many numbers to input : ");
+		scanf("%d", &n);
+		int nums[n];
+
 		printf("Input numbers : ");
+		getchar();
                 fgets(buf, sizeof(buf), stdin);
+		
 		pid = fork();
 		if(pid > 0){
 			while(wait(&status) !=pid)
                                 continue;
                         printf("try again (Y/N) : ");
-                        scanf("%c", &c);
+                        scanf(" %c", &c);
                         if(c=='Y'){
-                        	getchar();
+				getchar();
                                 continue;
-                        } else {
+                        } else if(c=='N') {
                                 exit(0);
-                        }
+                        } else {
+				puts("exit(input error)");
+				exit(1);
+			}
 		} else if(pid==0) {
 			token = strtok(buf, " \n");
-                        while(token!=NULL){
-                        	result+=atoi(token);
+                        while(token!=NULL && countToken < n){
+				nums[countToken] = atoi(token);
+                        	result+=nums[countToken];
                              	token = strtok(NULL, " ");
+				countToken++;
                         }
-                        printf("result = %d\n", result);
+			if(countToken==n){
+            			printf("result = %d\n", result);
+            		} else {
+            			printf("Please Input %d numbers\n", n);
+            		}
+			countToken = 0;
                         exit(0);
 		} else {
 			perror("fork fail");
