@@ -12,4 +12,4 @@ apt install -y openssh-client
 7. git push origin main
 
 ## How to use many terminal
-$docker exec -it <Container name> bash
+$docker exec -it [Container-Name] bash
