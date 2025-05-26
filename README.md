@@ -10,3 +10,6 @@ apt install -y openssh-client
 5. ssh-add ~/.ssh/id_ed25519 (docker bash)
 6. ssh -T git@github.com
 7. git push origin main
+
+## How to use many terminal
+$docker exec -it <Container name> bash
