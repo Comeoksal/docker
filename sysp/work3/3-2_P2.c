@@ -20,7 +20,6 @@ int main(){
 		total[0]='\0';
 		total_byte=0;
                 puts("Waiting P1 msg..........");
-
 		while(1){
 			nbyte = read(pd1, buf, sizeof(buf));
 			buf[nbyte] = '\0';
@@ -45,16 +44,14 @@ int main(){
 			write(1, "input your(P2) msg > ", 22);
 			nbyte = read(0, buf, sizeof(buf) -1);
 			buf[nbyte]='\0';
-			//strcat(total, buf);
-			//total_byte +=nbyte;
 			write(pd2, buf, nbyte);
+			total_byte += nbyte;
 			if(buf[nbyte-2] == '.'){
 				break;
 			}
 		}
-		if(nbyte == 2 && buf[nbyte-2] == '.'){
+		if(total_byte == 2 && buf[nbyte-2] == '.'){
 			exit(0);
 		}
-		//write(pd2, total, strlen(total));
         }
 }

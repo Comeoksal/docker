@@ -33,21 +33,19 @@ int main(){
 			write(1, "input your(P1) msg > ", 22);
 			nbyte = read(0, buf, sizeof(buf) -1);
 			buf[nbyte] = '\0';
-			//strcat(total, buf);
-			//total_byte +=nbyte;
 			write(pd1, buf, nbyte);
+			total_byte+=nbyte;
 			if(buf[nbyte-2] == '.'){
 				break;
 			}
 		}
-		if(nbyte == 2 && buf[nbyte-2] == '.'){
+		if(total_byte == 2 && buf[nbyte-2] == '.'){
 			exit(0);
 		}
-		//write(pd1, total, strlen(total));
+		
 		total[0]='\0';
 		total_byte=0;
 		puts("Waiting P2 msg..........");
-		
 		while(1){
 			nbyte = read(pd2, buf, sizeof(buf));
 			buf[nbyte] = '\0';
