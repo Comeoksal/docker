@@ -38,7 +38,6 @@ int main(){
 			token = strtok(NULL, "\n");
 		}
 		
-		total[0]='\0';
 		total_byte=0;
 		while(1){
 			write(1, "input your(P2) msg > ", 22);

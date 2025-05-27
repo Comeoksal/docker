@@ -14,20 +14,19 @@ int main(){
 		perror("mkfifo P1_to_P2");
 		exit(1);
 	}
-	if((pd1 = open("./P1_to_P2", O_WRONLY)) == -1){
-		perror("open pd1");
-		exit(1);
-	}
 	if(mkfifo("./P2_to_P1", 0666) == -1 && errno != EEXIST){
 		perror("mkfifo P2_to_P1");
 		exit(1);
 	}
+	if((pd1 = open("./P1_to_P2", O_WRONLY)) == -1){
+                perror("open pd1");
+                exit(1);
+        }
 	if((pd2 = open("./P2_to_P1", O_RDONLY)) == -1){
 		perror("open pd2");
 		exit(1);
 	}
 	while(1){
-		total[0] = '\0';
 		total_byte=0;
 		while(1){
 			write(1, "input your(P1) msg > ", 22);
