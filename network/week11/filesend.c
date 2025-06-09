@@ -11,7 +11,7 @@ int main(int argc, char *argv[]){
         fprintf(stderr, "Usage: %s <port>\n", argv[0]);
         return 1;
     }
-    listen_sock = tcp_listen(AF_INET, atoi(argv[1]), 5);
+    listen_sock = tcp_listen(INADDR_ANY, atoi(argv[1]), 5);
     while(1){
         sock = accept(listen_sock, (struct sockaddr *)&cliaddr, &addrlen);
        file_transfer(sock);
