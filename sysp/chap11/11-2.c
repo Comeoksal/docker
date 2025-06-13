@@ -18,7 +18,7 @@ int main(){
 		exit(1);
 	}
 
-	len = msgrcv(msgid, &inmsg, 80, 0, 0);
+	len = msgrcv(msgid, &inmsg, 80, 3, IPC_NOWAIT);
 	printf("Received Msg = %s, Len=%d\n", inmsg.mtext, len);
 }
 
