@@ -3,15 +3,15 @@
 #include <stdio.h>
 #include <string.h>
 
-struct mymsgbuf{
+typedef struct mymsgbuf{
 	long mtype;
 	char mtext[80];
-};
+}Message;
 
 int main(){
 	key_t key;
 	int msgid;
-	struct mymsgbuf mesg;
+	Message msg;
 
 	key = ftok("keyfile", 1);
 	msgid = msgget(key, IPC_CREAT | 0644);
@@ -20,10 +20,10 @@ int main(){
 		exit(1);
 	}
 
-	mesg.mtype = 1;
-	strcpy(mesg.mtext, "Message Q Test");
+	msg.mtype = 2;
+	strcpy(msg.mtext, "Message Q Test");
 
-	if(msgsnd(msgid, (void *)&mesg, 80, IPC_NOWAIT) == -1){
+	if(msgsnd(msgid, &msg, 80, IPC_NOWAIT) == -1){
 		perror("msgmd");
 		exit(1);
 	}
